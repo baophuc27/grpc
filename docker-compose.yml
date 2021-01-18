@@ -1,0 +1,19 @@
+version: '3.3'
+services:
+  profile-service:
+    build: .
+    ports:
+      - "50051:50051"
+    depends_on:
+      - mongo
+    environment:
+      - DATABASE_URI=mongodb://mongo
+      - DATABASE_NAME=finance-tracker
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb:/data/db
+volumes:
+  mongodb:

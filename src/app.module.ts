@@ -15,7 +15,7 @@ import { ExceptionFilter } from './common/filters/rpc-exception.filter';
 
 
 @Module({
-  imports: [UserModule, AuthModule, MongooseModule.forRoot(process.env.DATABASE_URI),
+  imports: [UserModule, AuthModule, MongooseModule.forRoot('mongodb://localhost:27017/finance-tracker'),
             MongooseModule.forFeature([{
               name: "User",
               schema: UserSchema,

@@ -7,12 +7,27 @@ import { RpcService } from './rpc/rpc.service';
 import { RpcModule } from './rpc/rpc.module';
 import { AuthModule } from './auth/auth.module';
 import {MongooseModule} from '@nestjs/mongoose'
+import { UserService } from './user/user.service';
+import { UserSchema } from './user/schemas/user.schema';
+import { APP_FILTER } from '@nestjs/core';
+import { ExceptionFilter } from './common/filters/rpc-exception.filter';
 
 
 
 @Module({
-  imports: [UserModule, AuthModule, MongooseModule.forRoot('mongodb://localhost:27017/finance-tracker')],
+  imports: [UserModule, AuthModule, MongooseModule.forRoot(process.env.DATABASE_URI),
+            MongooseModule.forFeature([{
+              name: "User",
+              schema: UserSchema,
+              collection: 'users'
+            }])],
+
   controllers: [ UserController, RpcController],
-  providers: [AppService, RpcService],
+
+  providers: [AppService,
+              RpcService,
+              UserService,
+            ],
 })
+
 export class AppModule {}

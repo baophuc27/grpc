@@ -3,17 +3,20 @@ services:
   profile-service:
     build: .
     ports:
-      - "50051:50051"
+      - "5000:5000"
     depends_on:
       - mongo
+    links: 
+      - mongo
     environment:
-      - DATABASE_URI=mongodb://mongo
-      - DATABASE_NAME=finance-tracker
+      - DATABASE_URI=mongodb://mongo/finance-tracker
+
   mongo:
     image: mongo:latest
     ports:
       - "27017:27017"
     volumes:
       - mongodb:/data/db
+      
 volumes:
   mongodb:

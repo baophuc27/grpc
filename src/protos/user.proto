@@ -1,13 +1,11 @@
 syntax = "proto3";
+option go_package = "github.com/grpc-ecosystem/grpc-gateway/v2/examples/internal/proto/examplepb";
 
 package user;
 
-
-service UserService{
-    rpc register (RegisterRequest) returns (TokenResponse);
-    rpc login (LoginRequest) returns (TokenResponse);
-    rpc getUser (GetUserRequest) returns (UserInfoResponse);
-}
+import "google/api/annotations.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/struct.proto";
 
 message Date{
     int32 year = 1;
@@ -57,4 +55,27 @@ message UserInfoResponse{
     string date_of_birth = 4;
     string address = 5;
     string phone = 6;
+}
+
+service UserService{
+    rpc register (RegisterRequest) returns (TokenResponse){
+        option (google.api.http) = {
+            post: "/v1/user/register"
+            body: "*"
+        };
+    }
+    rpc login (LoginRequest) returns (TokenResponse){
+        option (google.api.http) = {
+            post: "/v1/user/signin"
+            body: "*"
+        };
+    }
+    rpc getUser (GetUserRequest) returns (UserInfoResponse){
+        option (google.api.http) = {
+            get: "/v1/user/profile/{id}"
+            additional_bindings: {
+                get: "/v1/user/profile/{id}/{note}"
+            }
+        };
+    }
 }

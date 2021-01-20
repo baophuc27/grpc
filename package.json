@@ -40,6 +40,7 @@
     "google-protobuf": "^3.14.0",
     "grpc": "^1.24.4",
     "hashids": "^2.2.8",
+    "moment": "^2.29.1",
     "mongoose": "^5.11.12",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",

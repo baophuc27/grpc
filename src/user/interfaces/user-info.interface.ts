@@ -4,6 +4,6 @@ export interface UserInfo{
     firstName: string;
     lastName: string;
     address: string;
-    phoneNumber: string;
+    phone: string;
     dateOfBirth: string;
 }

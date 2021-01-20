@@ -16,7 +16,8 @@ import * as bcrypt from 'bcrypt';
 import { RpcException } from '@nestjs/microservices';
 import { GetUserByEmailDto } from './dto/get-user-by-email.dto';
 import {UserInfo} from './interfaces/user-info.interface'
-import { create } from 'domain';
+import moment = require('moment');
+
 
 @Injectable()
 export class UserService {
@@ -126,9 +127,9 @@ export class UserService {
                 email: user.email,
                 firstName : user.firstName,
                 lastName: user.lastName,
-                dateOfBirth: user.dateOfBirth.toString(),
+                dateOfBirth: moment(user.dateOfBirth).format('MM/DD/YYYY'),
                 address: user.address,
-                phoneNumber: user.phone
+                phone: user.phone
             }
             return userResponse
         }
@@ -148,9 +149,9 @@ export class UserService {
                 email: user.email,
                 firstName : user.firstName,
                 lastName: user.lastName,
-                dateOfBirth: user.dateOfBirth.toString(),
+                dateOfBirth: moment(user.dateOfBirth).format('MM/DD/YYYY'),
                 address: user.address,
-                phoneNumber: user.phone
+                phone: user.phone
             }
             return userResponse
         }

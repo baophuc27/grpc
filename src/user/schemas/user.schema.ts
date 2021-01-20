@@ -1,6 +1,6 @@
 import {Prop,Schema,MongooseModule,SchemaFactory} from '@nestjs/mongoose'
 import {Document} from 'mongoose'
-import { Method } from 'protobufjs'
+import {} from 'class-transformer'
 
 
 @Schema()

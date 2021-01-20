@@ -40,10 +40,6 @@ message GetUserRequest{
     string user_id = 1;
 }
 
-message VerifyRequest{
-    string token = 1;
-}
-
 message TokenResponse{
     string token = 1;
 }

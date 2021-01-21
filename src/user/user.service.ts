@@ -92,12 +92,14 @@ export class UserService {
 
     async login(loginDto : LoginDto){
         const user = await this.validatePassword(loginDto)
+        console.log(user)
         if (user){
             const payload : TokenPayload = {email: user.email, userId: user.userID}
             const accessToken = this.jwtService.sign(payload)
 
             const refreshToken = this.jwtService.sign(payload, {expiresIn: '90d'})
             const tokenResponse: TokenResponse = {accessToken: accessToken, refreshToken: refreshToken}
+            console.log(tokenResponse)
             return tokenResponse
         }
         else{

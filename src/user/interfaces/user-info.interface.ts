@@ -6,4 +6,5 @@ export interface UserInfo{
     address: string;
     phone: string;
     dateOfBirth: string;
+    avatar?: string;
 }

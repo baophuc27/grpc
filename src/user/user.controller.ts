@@ -27,5 +27,6 @@ export class UserController {
     async getUser(@Body() getUserByIDDto: GetUserByIDDto){
         return this.userService.getUserByID(getUserByIDDto)
     }
+
 }
 

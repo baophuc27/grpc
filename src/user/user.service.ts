@@ -17,6 +17,7 @@ import { RpcException } from '@nestjs/microservices';
 import { GetUserByEmailDto } from './dto/get-user-by-email.dto';
 import {UserInfo} from './interfaces/user-info.interface'
 import moment = require('moment');
+import { UpdateAvatarDto } from './dto/update-avatar.dto';
 
 
 @Injectable()
@@ -59,9 +60,10 @@ export class UserService {
 
         // Token
         const payload : TokenPayload = {email: createdUser.email, userId: createdUser.userID}
-        const token = this.jwtService.sign(payload)
+        const accessToken = this.jwtService.sign(payload)
         
-        const tokenResponse: TokenResponse = {token: token}
+        const refreshToken = this.jwtService.sign(payload, {expiresIn: '90d'})
+        const tokenResponse: TokenResponse = {accessToken: accessToken, refreshToken: refreshToken}
         return tokenResponse
         
 }
@@ -89,13 +91,13 @@ export class UserService {
     
 
     async login(loginDto : LoginDto){
-        console.log(loginDto)
         const user = await this.validatePassword(loginDto)
-        console.log(user)
         if (user){
             const payload : TokenPayload = {email: user.email, userId: user.userID}
-            const token = this.jwtService.sign(payload)
-            const tokenResponse: TokenResponse = {token: token}
+            const accessToken = this.jwtService.sign(payload)
+
+            const refreshToken = this.jwtService.sign(payload, {expiresIn: '90d'})
+            const tokenResponse: TokenResponse = {accessToken: accessToken, refreshToken: refreshToken}
             return tokenResponse
         }
         else{
@@ -159,5 +161,10 @@ export class UserService {
             code: grpc.status.NOT_FOUND,
             message: 'User not found'
         })
+    }
+
+    async updateAvatar(updateAvatarDto: UpdateAvatarDto){
+        const {userId,avatar} = updateAvatarDto;
+
     }
 }

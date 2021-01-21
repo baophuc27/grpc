@@ -11,9 +11,9 @@ import { PassportModule } from '@nestjs/passport';
   imports: [MongooseModule.forFeature([{name: User.name, schema: UserSchema}]),
   PassportModule.register({ defaultStrategy: 'jwt' }),
   JwtModule.register({
-    secretOrPrivateKey: 'ARI',
+    secret: 'ARI',
     signOptions: {
-      expiresIn: '1d',
+      expiresIn: '30d',
     },
   }) ],
   providers: [UserService,JwtStrategy],

@@ -41,7 +41,8 @@ message GetUserRequest{
 }
 
 message TokenResponse{
-    string token = 1;
+    string accessToken = 1;
+    string refreshToken =2;
 }
 
 message UserInfoResponse{

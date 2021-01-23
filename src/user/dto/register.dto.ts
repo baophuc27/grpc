@@ -17,7 +17,7 @@ export class RegisterDto{
 
 
     @IsString()
-    dateOfBirth
+    dateOfBirth: string
 
     @IsString()
     address: string;

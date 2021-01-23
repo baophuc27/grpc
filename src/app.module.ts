@@ -11,6 +11,8 @@ import { UserService } from './user/user.service';
 import { UserSchema } from './user/schemas/user.schema';
 import { APP_FILTER } from '@nestjs/core';
 import { ExceptionFilter } from './common/filters/rpc-exception.filter';
+import { AwsController } from './aws/aws.controller';
+import { AwsModule } from './aws/aws.module';
 
 
 
@@ -20,9 +22,10 @@ import { ExceptionFilter } from './common/filters/rpc-exception.filter';
               name: "User",
               schema: UserSchema,
               collection: 'users'
-            }])],
+            }]),
+            AwsModule],
 
-  controllers: [ UserController, RpcController],
+  controllers: [ UserController, RpcController, AwsController],
 
   providers: [AppService,
               RpcService,

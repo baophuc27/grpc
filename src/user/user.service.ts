@@ -53,8 +53,7 @@ export class UserService {
         createdUser.password = userPassword
         createdUser.salt = salt
         createdUser.userID = uuid()
-        createdUser.dateOfBirth = new Date(dateOfBirth)
-
+        createdUser.dateOfBirth = moment(new Date(dateOfBirth)).format('MM/DD/YYYY')
 
         await createdUser.save()
 
@@ -131,7 +130,7 @@ export class UserService {
                 email: user.email,
                 firstName : user.firstName,
                 lastName: user.lastName,
-                dateOfBirth: moment(user.dateOfBirth).format('MM/DD/YYYY'),
+                dateOfBirth: user.dateOfBirth,
                 address: user.address,
                 phone: user.phone
             }
@@ -153,7 +152,7 @@ export class UserService {
                 email: user.email,
                 firstName : user.firstName,
                 lastName: user.lastName,
-                dateOfBirth: moment(user.dateOfBirth).format('MM/DD/YYYY'),
+                dateOfBirth: user.dateOfBirth,
                 address: user.address,
                 phone: user.phone
             }

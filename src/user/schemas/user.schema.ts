@@ -21,7 +21,7 @@ export class User extends Document{
     phone: string
 
     @Prop({required: false})
-    dateOfBirth: Date
+    dateOfBirth: string
 
     @Prop({required: false})
     address: string

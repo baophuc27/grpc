@@ -4,8 +4,6 @@ import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
 import { RpcController } from './rpc/rpc.controller';
 import { RpcService } from './rpc/rpc.service';
-import { RpcModule } from './rpc/rpc.module';
-import { AuthModule } from './auth/auth.module';
 import {MongooseModule} from '@nestjs/mongoose'
 import { UserService } from './user/user.service';
 import { UserSchema } from './user/schemas/user.schema';
@@ -17,7 +15,7 @@ import { AwsModule } from './aws/aws.module';
 
 
 @Module({
-  imports: [UserModule, AuthModule, MongooseModule.forRoot('mongodb://localhost:27017/finance-tracker'),
+  imports: [UserModule, MongooseModule.forRoot('mongodb://localhost:27017/finance-tracker'),
             MongooseModule.forFeature([{
               name: "User",
               schema: UserSchema,

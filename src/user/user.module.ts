@@ -6,6 +6,7 @@ import {JwtStrategy} from './jwt.strategy'
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { UserController } from './user.controller';
 import { PassportModule } from '@nestjs/passport';
+require('dotenv').config()
 
 @Module({
   imports: [MongooseModule.forFeature([{name: User.name, schema: UserSchema}]),

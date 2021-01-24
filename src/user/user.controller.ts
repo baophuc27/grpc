@@ -1,5 +1,5 @@
-import { Body, Controller, UseFilters, ValidationPipe } from '@nestjs/common';
-import {GrpcMethod,ClientGrpc} from '@nestjs/microservices'
+import { Body, Controller, UseFilters, UseGuards, ValidationPipe } from '@nestjs/common';
+import {GrpcMethod,ClientGrpc,Client} from '@nestjs/microservices'
 import {UserService} from './user.service'
 import {UserInfo} from './interfaces/user-info.interface'
 import {RegisterDto} from './dto/register.dto'
@@ -7,6 +7,7 @@ import { ExceptionFilter } from 'src/common/filters/rpc-exception.filter';
 import { LoginDto } from './dto/login.dto';
 import {GetUserByEmailDto} from './dto/get-user-by-email.dto'
 import { GetUserByIDDto } from './dto/get-user.dto';
+import { GrpcAuthGuard } from 'src/user/guards/grpc-auth.guard';
 
 
 @Controller('user')
@@ -23,6 +24,7 @@ export class UserController {
         return this.userService.login(loginDto)
     }
 
+    @UseGuards(GrpcAuthGuard)
     @GrpcMethod("UserService","getUser")
     async getUser(@Body() getUserByIDDto: GetUserByIDDto){
         return this.userService.getUserByID(getUserByIDDto)

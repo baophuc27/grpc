@@ -6,15 +6,15 @@ import {JwtStrategy} from './jwt.strategy'
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { UserController } from './user.controller';
 import { PassportModule } from '@nestjs/passport';
-require('dotenv').config()
+
 
 @Module({
   imports: [MongooseModule.forFeature([{name: User.name, schema: UserSchema}]),
   PassportModule.register({ defaultStrategy: 'jwt' }),
   JwtModule.register({
-    secret: 'ARI',
+    secret: process.env.JWT_SECRET,
     signOptions: {
-      expiresIn: '30d',
+      expiresIn: process.env.JWT_ACCESS_TOKEN_DURATION,
     },
   }) ],
   providers: [UserService,JwtStrategy],

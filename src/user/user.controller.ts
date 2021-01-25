@@ -8,11 +8,14 @@ import { LoginDto } from './dto/login.dto';
 import {GetUserByEmailDto} from './dto/get-user-by-email.dto'
 import { GetUserByIDDto } from './dto/get-user.dto';
 import { GrpcAuthGuard } from 'src/user/guards/grpc-auth.guard';
+import { ConfigService } from '@nestjs/config';
 
 
 @Controller('user')
 export class UserController {
-    constructor(private readonly userService : UserService){}
+    constructor(
+    private readonly userService : UserService)
+    {}
 
     @GrpcMethod('UserService','register')
     async register(@Body() registerDto: RegisterDto) {
@@ -30,5 +33,9 @@ export class UserController {
         return this.userService.getUserByID(getUserByIDDto)
     }
 
+    @GrpcMethod("UserService",'test')
+    async test(test:string){
+        return this.userService.test()
+    }
 }
 

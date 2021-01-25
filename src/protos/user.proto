@@ -7,6 +7,8 @@ import "google/api/annotations.proto";
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/struct.proto";
 
+//  COMPLEMENTARY
+
 message Date{
     int32 year = 1;
     int32 month = 2;
@@ -20,6 +22,9 @@ message Address{
     string district = 4;
     string province = 5;
 }
+
+
+// REQUEST PROTO
 
 message RegisterRequest{
     string email = 1;
@@ -40,6 +45,12 @@ message GetUserRequest{
     string user_id = 1;
 }
 
+message TestRequest{
+    string test_message = 1;
+}
+
+// RESPONSE PROTO
+
 message TokenResponse{
     string accessToken = 1;
     string refreshToken =2;
@@ -53,6 +64,12 @@ message UserInfoResponse{
     string address = 5;
     string phone = 6;
 }
+
+message TestResponse{
+    string test_result = 1;
+}
+
+// SERVICE
 
 service UserService{
     rpc register (RegisterRequest) returns (TokenResponse){
@@ -75,4 +92,5 @@ service UserService{
             }
         };
     }
+    rpc test(TestRequest) returns (TestResponse){}
 }

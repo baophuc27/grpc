@@ -13,6 +13,7 @@ export class GrpcAuthGuard extends AuthGuard('jwt'){
         const type = context.getType()
         const prefix = 'Bearer';
         let header;
+        console.log(context)
         if (type === 'rpc'){
             const metadata = context.getArgByIndex(1)
             if (!metadata){
@@ -33,6 +34,7 @@ export class GrpcAuthGuard extends AuthGuard('jwt'){
         catch(e){
             return false
         }
+        
     }
 
 

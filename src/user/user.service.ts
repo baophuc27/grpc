@@ -18,6 +18,8 @@ import { GetUserByEmailDto } from './dto/get-user-by-email.dto';
 import {UserInfo} from './interfaces/user-info.interface'
 import moment = require('moment');
 import { UpdateAvatarDto } from './dto/update-avatar.dto';
+import { ConfigService } from '@nestjs/config';
+import { config } from 'process';
 
 
 @Injectable()
@@ -26,6 +28,7 @@ export class UserService {
     @InjectConnection() private readonly connection: Connection,
     @InjectModel(User.name) private userModel : Model<User>,
     private jwtService: JwtService,
+    private configService: ConfigService
     ){}
 
     async register(registerDto : RegisterDto){
@@ -39,7 +42,7 @@ export class UserService {
             phone,
             password
         } = registerDto;
-        
+
         await this.checkEmailAndPhone(email,phone)
 
         const createdUser =  new this.userModel(registerDto);
@@ -91,14 +94,13 @@ export class UserService {
 
     async login(loginDto : LoginDto){
         const user = await this.validatePassword(loginDto)
-        console.log(user)
+        
         if (user){
             const payload : TokenPayload = {email: user.email, userId: user.userID}
             const accessToken = this.jwtService.sign(payload)
 
-            const refreshToken = this.jwtService.sign(payload, {expiresIn: '90d'})
+            const refreshToken = this.jwtService.sign(payload, {expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_DURATION')})
             const tokenResponse: TokenResponse = {accessToken: accessToken, refreshToken: refreshToken}
-            console.log(tokenResponse)
             return tokenResponse
         }
         else{
@@ -121,9 +123,7 @@ export class UserService {
 
     async getUserByID(getUserDto: GetUserByIDDto) {
         const {userId} =  getUserDto;
-        console.log(userId)
         const user = await this.userModel.findOne({userID: userId.toString()})
-        console.log(user)
         if (user){
             let userResponse : UserInfo  = {
                 userId: userId.toString(),
@@ -167,5 +167,9 @@ export class UserService {
     async updateAvatar(updateAvatarDto: UpdateAvatarDto){
         const {userId,avatar} = updateAvatarDto;
 
+    }
+
+    async test(){
+        console.log("test ok")
     }
 }

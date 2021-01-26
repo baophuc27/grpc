@@ -19,7 +19,6 @@ import {UserInfo} from './interfaces/user-info.interface'
 import moment = require('moment');
 import { UpdateAvatarDto } from './dto/update-avatar.dto';
 import { ConfigService } from '@nestjs/config';
-import { config } from 'process';
 
 
 @Injectable()
@@ -50,6 +49,7 @@ export class UserService {
 
         const hashids =  new Hashids(email,6)
         const salt = await bcrypt.genSalt()
+        console.log(password)
         const userPassword = await bcrypt.hash(password,salt)
 
 
@@ -73,19 +73,16 @@ export class UserService {
         const duplicateEmail = await this.userModel.findOne({"email": email})
 
         if (duplicateEmail){
-            throw new RpcException({
-                code: grpc.status.ALREADY_EXISTS,
-                message: 'Email already exist'
-            })
+            return ({code: 201, message: 'Email already exist'})
         }
 
         const duplicatePhone = await this.userModel.findOne({"phone": phone})
-        console.log(duplicatePhone)
         if (duplicatePhone){
-            throw new RpcException({
-                code: grpc.status.ALREADY_EXISTS,
-                message: 'Phone number already exist'
-            })
+            // throw new RpcException({
+            //     code: grpc.status.ALREADY_EXISTS,
+            //     message: 'Phone number already exist'
+            // })
+            return ({code :201, message: 'Phone already exist'})
         }
 
     }
@@ -104,10 +101,11 @@ export class UserService {
             return tokenResponse
         }
         else{
-            throw new RpcException({
-                code : grpc.status.INVALID_ARGUMENT,
-                message: "Invalid email or password"
-            })
+            // throw new RpcException({
+            //     code : grpc.status.INVALID_ARGUMENT,
+            //     message: "Invalid email or password"
+            // })
+            return ({code :201 ,message: 'Invalid email or password'})
         }
     }
 
@@ -136,10 +134,7 @@ export class UserService {
             }
             return userResponse
         }
-        throw new RpcException({
-            code: grpc.status.NOT_FOUND,
-            message: 'User not found'
-        })
+        return ({code: 201, message:"User not found"})
 
     }
 

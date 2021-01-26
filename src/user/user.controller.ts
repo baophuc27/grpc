@@ -1,36 +1,52 @@
-import { Body, Controller, UseFilters, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseFilters, UseGuards, ValidationPipe ,Req, Query} from '@nestjs/common';
 import {GrpcMethod,ClientGrpc,Client} from '@nestjs/microservices'
 import {UserService} from './user.service'
-import {UserInfo} from './interfaces/user-info.interface'
 import {RegisterDto} from './dto/register.dto'
-import { ExceptionFilter } from 'src/common/filters/rpc-exception.filter';
 import { LoginDto } from './dto/login.dto';
-import {GetUserByEmailDto} from './dto/get-user-by-email.dto'
 import { GetUserByIDDto } from './dto/get-user.dto';
 import { GrpcAuthGuard } from 'src/user/guards/grpc-auth.guard';
-import { ConfigService } from '@nestjs/config';
+import {
+    ApiBearerAuth,
+    ApiOperation,
+    ApiResponse,
+    ApiTags,
+  } from '@nestjs/swagger';
 
 
+@ApiBearerAuth()
+@ApiTags('user')
 @Controller('user')
 export class UserController {
     constructor(
     private readonly userService : UserService)
     {}
 
-    @GrpcMethod('UserService','register')
-    async register(@Body() registerDto: RegisterDto) {
+    @Post('/register')
+    async register(@Body(ValidationPipe) registerDto: RegisterDto) {
+        console.log(registerDto)
         return this.userService.register(registerDto)
     }
     
+
+    @Post('/login')
     @GrpcMethod("UserService","login")
-    async login(@Body() loginDto: LoginDto){
+    async login(@Body(ValidationPipe) loginDto: LoginDto){
         return this.userService.login(loginDto)
     }
 
-    @UseGuards(GrpcAuthGuard)
-    @GrpcMethod("UserService","getUser")
-    async getUser(@Body() getUserByIDDto: GetUserByIDDto){
+    @Get('/profile')
+    async getUser(@Query() getUserByIDDto: GetUserByIDDto){
         return this.userService.getUserByID(getUserByIDDto)
+    }
+
+    @Post('/update-avatar')
+    async updateAvatar(){
+        return ({code: 200, message: "Chua xong :D"})
+    }
+
+    @Post('change-password')
+    async changePassword(){
+        return ({code: 200, message: "Dang lam :D"})
     }
 
     @GrpcMethod("UserService",'test')

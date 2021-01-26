@@ -1,4 +1,15 @@
 {
   "collection": "@nestjs/schematics",
-  "sourceRoot": "src"
+  "sourceRoot": "src",
+  "compilerOptions": {
+    "plugins": [
+      "@nestjs/swagger/plugin"
+    ],
+    "assets": [
+      "**/*.css",
+      "**/*.jpg",
+      "**/*.hbs",
+      "**/*.png"
+    ]
+  }
 }

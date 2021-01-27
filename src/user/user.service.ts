@@ -18,6 +18,7 @@ import moment = require('moment');
 import { UpdateAvatarDto } from './dto/update-avatar.dto';
 import { ConfigService } from '@nestjs/config';
 import { access } from 'fs';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 
 @Injectable()
@@ -59,13 +60,13 @@ export class UserService {
         createdUser.salt = salt
         createdUser.userID = uuid()
         createdUser.dateOfBirth = moment(new Date(dateOfBirth)).format('MM/DD/YYYY')
-        let response = ({statusCode: 200,message: "Sign up successfully"})
+        let response = ({code: 200,message: "Sign up successfully"})
         try{
             await createdUser.save()
         }
         catch (err){
             console.log(err)
-            response = ({statusCode: 201, message: "Something go wrong when sign up"})
+            response = ({code: 201, message: "Something go wrong when sign up"})
         }
         finally{
             return response
@@ -76,12 +77,12 @@ export class UserService {
         const duplicateEmail = await this.userModel.findOne({"email": email})
 
         if (duplicateEmail){
-            return ({statusCode: 201, message: 'Email already exist'})
+            return ({code: 201, message: 'Email already exist'})
         }
 
         const duplicatePhone = await this.userModel.findOne({"phone": phone})
         if (duplicatePhone){
-            return ({statusCode :201, message: 'Phone already exist'})
+            return ({code :201, message: 'Phone already exist'})
         }
         return null
 
@@ -97,11 +98,11 @@ export class UserService {
             const accessToken = this.jwtService.sign(payload)
 
             const refreshToken = this.jwtService.sign(payload, {expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_DURATION')})
-            const tokenResponse = {statusCode:200, accessToken: accessToken, refreshToken: refreshToken}
+            const tokenResponse = {code:200, data:{accessToken: accessToken, refreshToken: refreshToken}}
             return tokenResponse
         }
         else{
-            return ({statusCode :201 ,message: 'Invalid email or password'})
+            return ({code :201 ,message: 'Invalid email or password'})
         }
     }
 
@@ -135,15 +136,13 @@ export class UserService {
 
     }
 
+    async updateAvatar(updateAvatarDto: UpdateAvatarDto){
+        const {userId,avatar} = updateAvatarDto;
 
+    }
 
-//     async updateAvatar(updateAvatarDto: UpdateAvatarDto){
-//         const {userId,avatar} = updateAvatarDto;
-
-//     }
-
-//     async test(){
-//         console.log("test ok")
-//     }
-// 
+    async changePassword(changePasswordDto: ChangePasswordDto){
+        const {oldPassword, newPassword, confirmPassword} = changePasswordDto
+        console.log(changePasswordDto)
+    }
 }

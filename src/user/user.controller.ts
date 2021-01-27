@@ -13,6 +13,7 @@ import {
   } from '@nestjs/swagger';
 import { User } from './schemas/user.schema';
 import { access } from 'fs';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 
 @ApiBearerAuth()
@@ -48,8 +49,8 @@ export class UserController {
     }
 
     @Post('change-password')
-    async changePassword(){
-        return ({code: 200, message: "Dang lam :D"})
+    async changePassword(@Body() changePasswordDto: ChangePasswordDto){
+        return this.userService.changePassword(changePasswordDto)
     }
 
 }

@@ -6,7 +6,6 @@ import Hashids = require('hashids/cjs')
 import {InjectConnection} from '@nestjs/mongoose'
 import {Connection, Model} from 'mongoose'
 import { LoginDto } from './dto/login.dto';
-import { GetUserByIDDto } from './dto/get-user.dto';
 import grpc = require('grpc')
 import {InjectModel} from '@nestjs/mongoose'
 import {User,UserSchema} from './schemas/user.schema'
@@ -14,11 +13,11 @@ import {TokenPayload} from './interfaces/token-payload.interface'
 import { TokenResponse } from './interfaces/token-response.interface'
 import * as bcrypt from 'bcrypt';
 import { RpcException } from '@nestjs/microservices';
-import { GetUserByEmailDto } from './dto/get-user-by-email.dto';
 import {UserInfo} from './interfaces/user-info.interface'
 import moment = require('moment');
 import { UpdateAvatarDto } from './dto/update-avatar.dto';
 import { ConfigService } from '@nestjs/config';
+import { access } from 'fs';
 
 
 @Injectable()
@@ -42,14 +41,17 @@ export class UserService {
             password
         } = registerDto;
 
-        await this.checkEmailAndPhone(email,phone)
+        var duplicated = await this.checkEmailAndPhone(email,phone)
+        if (duplicated){
+            return duplicated;
+        }
 
         const createdUser =  new this.userModel(registerDto);
         
 
         const hashids =  new Hashids(email,6)
         const salt = await bcrypt.genSalt()
-        console.log(password)
+
         const userPassword = await bcrypt.hash(password,salt)
 
 
@@ -57,33 +59,31 @@ export class UserService {
         createdUser.salt = salt
         createdUser.userID = uuid()
         createdUser.dateOfBirth = moment(new Date(dateOfBirth)).format('MM/DD/YYYY')
-
-        await createdUser.save()
-
-        // Token
-        const payload : TokenPayload = {email: createdUser.email, userId: createdUser.userID}
-        const accessToken = this.jwtService.sign(payload)
-        
-        const refreshToken = this.jwtService.sign(payload, {expiresIn: '90d'})
-        const tokenResponse: TokenResponse = {accessToken: accessToken, refreshToken: refreshToken}
-        return tokenResponse
+        let response = ({statusCode: 200,message: "Sign up successfully"})
+        try{
+            await createdUser.save()
+        }
+        catch (err){
+            console.log(err)
+            response = ({statusCode: 201, message: "Something go wrong when sign up"})
+        }
+        finally{
+            return response
+        }
         
 }
     async checkEmailAndPhone(email,phone){
         const duplicateEmail = await this.userModel.findOne({"email": email})
 
         if (duplicateEmail){
-            return ({code: 201, message: 'Email already exist'})
+            return ({statusCode: 201, message: 'Email already exist'})
         }
 
         const duplicatePhone = await this.userModel.findOne({"phone": phone})
         if (duplicatePhone){
-            // throw new RpcException({
-            //     code: grpc.status.ALREADY_EXISTS,
-            //     message: 'Phone number already exist'
-            // })
-            return ({code :201, message: 'Phone already exist'})
+            return ({statusCode :201, message: 'Phone already exist'})
         }
+        return null
 
     }
 
@@ -97,15 +97,11 @@ export class UserService {
             const accessToken = this.jwtService.sign(payload)
 
             const refreshToken = this.jwtService.sign(payload, {expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_DURATION')})
-            const tokenResponse: TokenResponse = {accessToken: accessToken, refreshToken: refreshToken}
+            const tokenResponse = {statusCode:200, accessToken: accessToken, refreshToken: refreshToken}
             return tokenResponse
         }
         else{
-            // throw new RpcException({
-            //     code : grpc.status.INVALID_ARGUMENT,
-            //     message: "Invalid email or password"
-            // })
-            return ({code :201 ,message: 'Invalid email or password'})
+            return ({statusCode :201 ,message: 'Invalid email or password'})
         }
     }
 
@@ -119,8 +115,9 @@ export class UserService {
         
     }
 
-    async getUserByID(getUserDto: GetUserByIDDto) {
-        const {userId} =  getUserDto;
+    async getUserByID(accessToken) {
+        var userToken = await this.jwtService.decode(accessToken)
+        var userId = userToken['userId']
         const user = await this.userModel.findOne({userID: userId.toString()})
         if (user){
             let userResponse : UserInfo  = {
@@ -138,33 +135,15 @@ export class UserService {
 
     }
 
-    async getUserByEmail(getUserByEmailDto: GetUserByEmailDto){
-        const {email} =  getUserByEmailDto;
-        const user = await this.userModel.findOne({email: email})
-        if (user){
-            let userResponse : UserInfo  = {
-                userId: user.userID,
-                email: user.email,
-                firstName : user.firstName,
-                lastName: user.lastName,
-                dateOfBirth: user.dateOfBirth,
-                address: user.address,
-                phone: user.phone
-            }
-            return userResponse
-        }
-        throw new RpcException({
-            code: grpc.status.NOT_FOUND,
-            message: 'User not found'
-        })
-    }
 
-    async updateAvatar(updateAvatarDto: UpdateAvatarDto){
-        const {userId,avatar} = updateAvatarDto;
 
-    }
+//     async updateAvatar(updateAvatarDto: UpdateAvatarDto){
+//         const {userId,avatar} = updateAvatarDto;
 
-    async test(){
-        console.log("test ok")
-    }
+//     }
+
+//     async test(){
+//         console.log("test ok")
+//     }
+// 
 }

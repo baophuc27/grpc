@@ -3,14 +3,16 @@ import {GrpcMethod,ClientGrpc,Client} from '@nestjs/microservices'
 import {UserService} from './user.service'
 import {RegisterDto} from './dto/register.dto'
 import { LoginDto } from './dto/login.dto';
-import { GetUserByIDDto } from './dto/get-user.dto';
 import { GrpcAuthGuard } from 'src/user/guards/grpc-auth.guard';
+import {GetUser} from './get-user.decorator' 
 import {
     ApiBearerAuth,
     ApiOperation,
     ApiResponse,
     ApiTags,
   } from '@nestjs/swagger';
+import { User } from './schemas/user.schema';
+import { access } from 'fs';
 
 
 @ApiBearerAuth()
@@ -35,8 +37,9 @@ export class UserController {
     }
 
     @Get('/profile')
-    async getUser(@Query() getUserByIDDto: GetUserByIDDto){
-        return this.userService.getUserByID(getUserByIDDto)
+    async getUser(@GetUser() accessToken: string): Promise<any> {
+        
+        return this.userService.getUserByID(accessToken)
     }
 
     @Post('/update-avatar')
@@ -49,9 +52,5 @@ export class UserController {
         return ({code: 200, message: "Dang lam :D"})
     }
 
-    @GrpcMethod("UserService",'test')
-    async test(test:string){
-        return this.userService.test()
-    }
 }
 

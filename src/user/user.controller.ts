@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseFilters, UseGuards, ValidationPipe ,Req, Query} from '@nestjs/common';
+import { Body, Controller, Get, Post, UseFilters, UseGuards, ValidationPipe ,Req, Query, UploadedFile, UseInterceptors} from '@nestjs/common';
 import {GrpcMethod,ClientGrpc,Client} from '@nestjs/microservices'
 import {UserService} from './user.service'
 import {RegisterDto} from './dto/register.dto'
@@ -14,7 +14,8 @@ import {
 import { User } from './schemas/user.schema';
 import { access } from 'fs';
 import { ChangePasswordDto } from './dto/change-password.dto';
-
+import {Express, request} from 'express'
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiBearerAuth()
 @ApiTags('user')
@@ -38,14 +39,15 @@ export class UserController {
     }
 
     @Get('/profile')
-    async getUser(@GetUser() accessToken: string): Promise<any> {
-        
-        return this.userService.getUserByID(accessToken)
+    async getUser(@GetUser() user: User) {
+        console.log(user)
+        return this.userService.getUserByID(user.userID)
     }
 
     @Post('/update-avatar')
-    async updateAvatar(){
-        return ({code: 200, message: "Chua xong :D"})
+    @UseInterceptors(FileInterceptor('file'))
+    async updateAvatar(@Req() req,@GetUser() user: User, @UploadedFile() file){
+        return this.userService.updateAvatar("1",file.buffer,file.originalname)
     }
 
     @Post('change-password')

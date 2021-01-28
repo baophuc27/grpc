@@ -7,8 +7,6 @@ import {InjectModel} from '@nestjs/mongoose'
 import {User,UserSchema} from './schemas/user.schema'
 import {Model} from 'mongoose'
 
-config();
-
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
     constructor(
@@ -16,12 +14,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     ) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-            secretOrKey: 'ARI',
+            secretOrKey:'TGa6zx4x|(\Y^KZ*j.P2ZSMjc8f72h0<ra4JbkL`+ElPh%}~20WVgaf=TG5tQru',
         })
     }
 
-    async validate(payload: TokenPayload) {
+    async validate(payload) {
         const { email } = payload
+        console.log(payload)
         const user = await this.userRepository.findOne({ email, isDeleted: false });
 
         if (!user) {

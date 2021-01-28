@@ -11,7 +11,9 @@ import { AwsController } from './aws/aws.controller';
 import { AwsModule } from './aws/aws.module';
 import { ConfigModule } from '@nestjs/config';
 import {Connection} from 'mongoose'
-
+import { FilesService } from './files/files.service';
+import { FilesController } from './files/files.controller';
+import { FilesModule } from './files/files.module';
 
 
 @Module({
@@ -26,12 +28,14 @@ import {Connection} from 'mongoose'
             AwsModule,
             ConfigModule.forRoot({
               isGlobal: true,
-            })],
+            }),
+            FilesModule],
 
-  controllers: [ UserController, AwsController],
+  controllers: [ UserController, AwsController, FilesController],
 
   providers: [AppService,
               UserService,
+              FilesService,
             ],
 })
 

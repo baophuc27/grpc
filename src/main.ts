@@ -4,6 +4,8 @@ import { AppModule } from './app.module';
 import {join} from 'path'
 import {DocumentBuilder,SwaggerModule} from '@nestjs/swagger'
 import {grpcClientOptions} from  './grpc-client.options'
+import {ConfigService} from '@nestjs/config'
+import {config} from 'aws-sdk'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,6 +20,12 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);
 
+  const configService = app.get(ConfigService);
+  config.update({
+    accessKeyId: configService.get('AWS_ACCESS_KEY_ID'),
+    secretAccessKey: configService.get('AWS_SECRET_ACCESS_KEY'),
+    region: configService.get('AWS_REGION'),
+  });
   await app.listen(3000,'0.0.0.0');
   console.log(`Application is running on: ${await app.getUrl()}`);
 }

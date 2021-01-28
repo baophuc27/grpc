@@ -6,6 +6,7 @@ import {JwtStrategy} from './jwt.strategy'
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { UserController } from './user.controller';
 import { PassportModule } from '@nestjs/passport';
+import { FilesService } from 'src/files/files.service';
 
 
 @Module({
@@ -17,7 +18,7 @@ import { PassportModule } from '@nestjs/passport';
       expiresIn: process.env.JWT_ACCESS_TOKEN_DURATION,
     },
   }) ],
-  providers: [UserService,JwtStrategy],
+  providers: [UserService,JwtStrategy,FilesService],
   controllers: [UserController],
   exports: [JwtStrategy,UserService,JwtModule,PassportModule]
 })

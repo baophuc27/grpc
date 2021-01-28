@@ -19,7 +19,7 @@ import { UpdateAvatarDto } from './dto/update-avatar.dto';
 import { ConfigService } from '@nestjs/config';
 import { access } from 'fs';
 import { ChangePasswordDto } from './dto/change-password.dto';
-
+import {FilesService} from '../files/files.service'
 
 @Injectable()
 export class UserService {
@@ -27,7 +27,8 @@ export class UserService {
     @InjectConnection() private readonly connection: Connection,
     @InjectModel(User.name) private userModel : Model<User>,
     private jwtService: JwtService,
-    private configService: ConfigService
+    private configService: ConfigService,
+    private fileService: FilesService
     ){}
 
     async register(registerDto : RegisterDto){
@@ -136,8 +137,10 @@ export class UserService {
 
     }
 
-    async updateAvatar(updateAvatarDto: UpdateAvatarDto){
-        const {userId,avatar} = updateAvatarDto;
+    async updateAvatar(userId: string, imageBuffer: Buffer,filename: string){
+       const avatar = this.fileService.uploadFile(imageBuffer,filename)
+    //    const user = await this.userModel.updateOne(userId,{...user})
+        console.log(avatar)
 
     }
 

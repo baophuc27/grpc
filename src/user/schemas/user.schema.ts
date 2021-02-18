@@ -6,7 +6,7 @@ import {} from 'class-transformer'
 @Schema()
 export class User extends Document{
     @Prop({required: true})
-    userID: string
+    userId: string
 
     @Prop({required: true})
     email: string

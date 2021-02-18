@@ -16,6 +16,7 @@ import { access } from 'fs';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import {Express, request} from 'express'
 import { FileInterceptor } from '@nestjs/platform-express';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiBearerAuth()
 @ApiTags('user')
@@ -41,19 +42,26 @@ export class UserController {
     @Get('/profile')
     async getUser(@GetUser() user: User) {
         console.log(user)
-        return this.userService.getUserByID(user.userID)
+        return this.userService.getUserByID(user.userId)
     }
 
     @Post('/update-avatar')
+    @UseGuards(AuthGuard())
     @UseInterceptors(FileInterceptor('file'))
     async updateAvatar(@Req() req,@GetUser() user: User, @UploadedFile() file){
-        return this.userService.updateAvatar("1",file.buffer,file.originalname)
+        return this.userService.updateAvatar(user.userId,file.buffer,file.originalname)
     }
 
     @Post('change-password')
-    async changePassword(@Body() changePasswordDto: ChangePasswordDto){
-        return this.userService.changePassword(changePasswordDto)
+    @UseGuards(AuthGuard())
+    async changePassword(@GetUser() user: User,@Body() changePasswordDto: ChangePasswordDto){
+        return this.userService.changePassword(user.userId,changePasswordDto)
     }
 
+    @Get('fetch-avatar')
+    @UseGuards(AuthGuard())
+    async fetchAvatar(@GetUser() user: User){
+        return this.userService.fetchAvatar(user.userId)
+    }
 }
 

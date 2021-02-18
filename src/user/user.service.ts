@@ -20,6 +20,7 @@ import { ConfigService } from '@nestjs/config';
 import { access } from 'fs';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import {FilesService} from '../files/files.service'
+import { assert } from 'console';
 
 @Injectable()
 export class UserService {
@@ -50,16 +51,13 @@ export class UserService {
 
         const createdUser =  new this.userModel(registerDto);
         
-
-        const hashids =  new Hashids(email,6)
         const salt = await bcrypt.genSalt()
-
         const userPassword = await bcrypt.hash(password,salt)
 
 
         createdUser.password = userPassword
         createdUser.salt = salt
-        createdUser.userID = uuid()
+        createdUser.userId = uuid()
         createdUser.dateOfBirth = moment(new Date(dateOfBirth)).format('MM/DD/YYYY')
         let response = ({code: 200,message: "Sign up successfully"})
         try{
@@ -95,7 +93,7 @@ export class UserService {
         const user = await this.validatePassword(loginDto)
         
         if (user){
-            const payload : TokenPayload = {email: user.email, userId: user.userID}
+            const payload : TokenPayload = {email: user.email, userId: user.userId}
             const accessToken = this.jwtService.sign(payload)
 
             const refreshToken = this.jwtService.sign(payload, {expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_DURATION')})
@@ -120,7 +118,7 @@ export class UserService {
     async getUserByID(accessToken) {
         var userToken = await this.jwtService.decode(accessToken)
         var userId = userToken['userId']
-        const user = await this.userModel.findOne({userID: userId.toString()})
+        const user = await this.userModel.findOne({userId: userId.toString()})
         if (user){
             let userResponse : UserInfo  = {
                 userId: userId.toString(),
@@ -138,14 +136,66 @@ export class UserService {
     }
 
     async updateAvatar(userId: string, imageBuffer: Buffer,filename: string){
-       const avatar = this.fileService.uploadFile(imageBuffer,filename)
-    //    const user = await this.userModel.updateOne(userId,{...user})
-        console.log(avatar)
-
+       const avatar = await this.fileService.uploadFile(imageBuffer,filename)
+       const user = await this.userModel.findOne({userId: userId})
+       try{
+            await this.userModel.updateOne({userId:userId},{avatar:avatar})
+       }
+       catch(error){
+           console.log(error)
+           return ({
+               code: 201,
+               message: 'Something wrong when update avatar'
+           })
+       }
+       return ({
+           code: 200,
+           message: 'Update avatar successfully'
+       })
     }
 
-    async changePassword(changePasswordDto: ChangePasswordDto){
+    async changePassword(userId: string,changePasswordDto: ChangePasswordDto){
         const {oldPassword, newPassword, confirmPassword} = changePasswordDto
-        console.log(changePasswordDto)
+        if (newPassword !== confirmPassword){
+            return ({
+                code: 201,
+                message: 'Confirm password does not match new password'
+            })
+        }
+
+        const salt = await bcrypt.genSalt()
+        const userPassword = await bcrypt.hash(newPassword,salt)
+        try{
+            await this.userModel.updateOne({userId: userId},{"$set":{password: userPassword}})
+        }
+        catch(error){
+            return ({
+                code: 201,
+                message: 'Somethine wrong when update password'
+            })
+        }
+        return ({
+            code: 200,
+            message: 'Change password successfully'
+        })
+    }
+
+    async fetchAvatar(userId: string){
+        const userAvatar = await this.userModel.findOne({userId: userId}).select('avatar')
+        
+        if(userAvatar.avatar){
+            const url = await this.fileService.generatePresignedUrl(userAvatar.avatar)
+            return ({
+                code: 200,
+                data: {key: userAvatar.avatar,presignedUrl:url}
+            })
+        }
+        else{
+            return ({
+                code: 201,
+                message: 'User does not have avatar yet.'
+            })
+        }
+
     }
 }

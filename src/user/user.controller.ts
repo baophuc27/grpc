@@ -40,9 +40,10 @@ export class UserController {
     }
 
     @Get('/profile')
+    @UseGuards(AuthGuard())
     async getUser(@GetUser() user: User) {
         console.log(user)
-        return this.userService.getUserByID(user.userId)
+        return this.userService.getUser(user)
     }
 
     @Post('/update-avatar')

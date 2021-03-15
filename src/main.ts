@@ -8,6 +8,8 @@ import {ConfigService} from '@nestjs/config'
 import {config} from 'aws-sdk'
 
 async function bootstrap() {
+  console.log("hello")
+  console.log(process.env.MONGODB_CONNECTION_URL)
   const app = await NestFactory.create(AppModule);
   
   const options = new DocumentBuilder()

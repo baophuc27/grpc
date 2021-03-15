@@ -115,13 +115,9 @@ export class UserService {
         
     }
 
-    async getUserByID(accessToken) {
-        var userToken = await this.jwtService.decode(accessToken)
-        var userId = userToken['userId']
-        const user = await this.userModel.findOne({userId: userId.toString()})
+    async getUser(user) {
         if (user){
             let userResponse : UserInfo  = {
-                userId: userId.toString(),
                 email: user.email,
                 firstName : user.firstName,
                 lastName: user.lastName,
@@ -198,4 +194,5 @@ export class UserService {
         }
 
     }
+
 }

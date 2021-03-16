@@ -125,7 +125,7 @@ export class UserService {
                 address: user.address,
                 phone: user.phone
             }
-            return userResponse
+            return ({code : 200,data: userResponse})
         }
         return ({code: 201, message:"User not found"})
 

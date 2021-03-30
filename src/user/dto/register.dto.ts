@@ -19,12 +19,9 @@ export class RegisterDto{
     @ApiProperty()
     lastName: string;
 
-
-    @IsString()
     @ApiProperty()
     dateOfBirth: string
 
-    @IsString()
     @ApiProperty()
     address: string;
 

@@ -118,14 +118,14 @@ export class UserService {
     async getUser(user) {
         if (user ){
             let userResponse : UserInfo  = {
-                userId : user.userId,
+                id : user.userId,
                 email: user.email,
                 firstName : user.firstName,
                 lastName: user.lastName,
                 dateOfBirth: user.dateOfBirth,
                 address: user.address,
                 phone: user.phone,
-                avatar : user.avatar
+                avatar : "avatar"
             }
             return ({code : 200,data: userResponse})
         }

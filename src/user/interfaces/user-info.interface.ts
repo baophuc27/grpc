@@ -1,10 +1,10 @@
 export interface UserInfo{
-    userId: string;
+    id: string;
     email: string;
     firstName: string;
     lastName: string;
     address: string;
     phone: string;
     dateOfBirth: string;
-    avatar: string;
+    avatar?: string;
 }

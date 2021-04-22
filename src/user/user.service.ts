@@ -116,8 +116,8 @@ export class UserService {
 
     async getUser(user : User) {
         const userAvatar = await this.userModel.findOne({userId: user.userId}).select('avatar')
-        let key = userAvatar != null ? userAvatar.avatar : null
-        let url = userAvatar != null ? await this.fileService.generatePresignedUrl(userAvatar.avatar) : null
+        let key = userAvatar != undefined ? userAvatar.avatar : null
+        let url = userAvatar != undefined ? await this.fileService.generatePresignedUrl(userAvatar.avatar) : null
         if (user ){
             let userResponse : UserInfo  = {
                 id : user.userId,

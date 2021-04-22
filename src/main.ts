@@ -20,7 +20,7 @@ async function bootstrap() {
   .addBearerAuth()
   .build();
   const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('', app, document);
 
   const configService = app.get(ConfigService);
   config.update({

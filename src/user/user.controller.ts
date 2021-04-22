@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseFilters, UseGuards, ValidationPipe ,Req, Query, UploadedFile, UseInterceptors} from '@nestjs/common';
+import { Body, Controller, Get, Post, UseFilters, UseGuards, ValidationPipe ,Req, Query, UploadedFile, UseInterceptors, Put} from '@nestjs/common';
 import {GrpcMethod,ClientGrpc,Client} from '@nestjs/microservices'
 import {UserService} from './user.service'
 import {RegisterDto} from './dto/register.dto'
@@ -64,5 +64,8 @@ export class UserController {
     async fetchAvatar(@GetUser() user: User){
         return this.userService.fetchAvatar(user.userId)
     }
+
+    // @Put('change-profile')
+    // @UseGuards()
 }
 

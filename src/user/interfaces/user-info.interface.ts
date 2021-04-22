@@ -6,5 +6,5 @@ export interface UserInfo{
     address: string;
     phone: string;
     dateOfBirth: string;
-    avatar?: string;
+    avatar?: { key: string; url: string; };
 }

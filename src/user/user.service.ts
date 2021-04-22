@@ -112,10 +112,12 @@ export class UserService {
             return user
         }
         return null
-        
     }
 
-    async getUser(user) {
+    async getUser(user : User) {
+        const userAvatar = await this.userModel.findOne({userId: user.userId}).select('avatar')
+        let key = userAvatar != null ? userAvatar.avatar : null
+        let url = userAvatar != null ? await this.fileService.generatePresignedUrl(userAvatar.avatar) : null
         if (user ){
             let userResponse : UserInfo  = {
                 id : user.userId,
@@ -125,7 +127,10 @@ export class UserService {
                 dateOfBirth: user.dateOfBirth,
                 address: user.address,
                 phone: user.phone,
-                avatar : "avatar"
+                avatar : {
+                    key : key,
+                    url : url
+                }
             }
             return ({code : 200,data: userResponse})
         }
@@ -137,7 +142,7 @@ export class UserService {
        const avatar = await this.fileService.uploadFile(imageBuffer,filename)
        const user = await this.userModel.findOne({userId: userId})
        try{
-            await this.userModel.updateOne({userId:userId},{avatar:avatar})
+            await this.userModel.findOneAndUpdate({userId:userId},{avatar:avatar})
        }
        catch(error){
            console.log(error)
@@ -194,7 +199,6 @@ export class UserService {
                 message: 'User does not have avatar yet.'
             })
         }
-
     }
 
 }
